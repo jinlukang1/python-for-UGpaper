@@ -6,34 +6,23 @@
 import requests
 import os
 
-Message = True
-Station_ID_St = 0 
-Station_ID_En = 1
-GMT_Data_Date_Time = \
-
-
-def Print_Message(*args, **kwargs):
-	if Message == True:
-		return print(*args, **kwargs)
-
-Payload_getSurfEleByTimeAndStaIdRange = {
+Payload = {
 	'userId':'BESZ_SJZ_QXT',
 	'pwd':'123456',
-	'interfaceId':'getSurfEleByTimeAndStaIdRange',
+	'interfaceId':'getSurfEleByTimeRangeAndStaID',
 	'dataCode':'SURF_CHN_MUL_HOR',
 	#以下是所需参数部分
 	#具体参见http://10.48.89.55/cimissapiweb/apidataclassdefine_list.action
 	'elements':'Station_Name,Cnty,Datetime,Station_Id_d,Year,Mon,Day,Hour,PRS',
-	'times':GMT_Data_Date_Time,
-	'minStaId':str(Station_ID_St),
-	'maxStaId':str(Station_ID_En),
-	'ordBy':'Station_Id_d:ASC'
+	'timeRange':'(20170901000000,20170903060000)',
+	'staIds':'54511',
+	'orderBy':'Datetime:ASC',
 	'dataFormat':'json'
 }
 
 url = 'http://10.48.89.55/cimiss-web/api'
 
-r = requests.get(url, params = Payload_getSurfEleByTimeAndStaIdRange)
+r = requests.get(url, params = Payload)
 
 #设置名称
 data_file_name = 'test1'
