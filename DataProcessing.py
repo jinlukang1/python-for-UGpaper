@@ -1,4 +1,4 @@
-#cd C:\Users\Administrator\Desktop\dataG\DataProcessing
+#cd /Users/lukangjin/Desktop
 #基于python3
 ''''elements':
 'Station_Name,Datetime,Station_Id_d,Year,Mon,Day,Hour,PRS,PRS_Sea\
@@ -68,7 +68,7 @@ paras = ['Station_Name','Datetime','Station_Id_d','Year','Mon','Day','Hour','PRS
 ,'Q_FRS_1st_Top','Q_FRS_1st_Bot','Q_FRS_2nd_Top','Q_FRS_2nd_Bot']
 
 #打开读取文件
-with open(r'C:\Users\Administrator\Desktop\dataG\hefei20170401-20170901.txt', 'rt',\
+with open(r'/Users/lukangjin/Desktop/hefei20170401-20170901.txt', 'rt',\
  encoding = 'utf-8') as fp:
 	data = fp.read()
 fp.close()
@@ -79,12 +79,12 @@ data = str(data).replace("\t","")
 
 #将json格式转化为字典格式并读出
 text = json.loads(str(data), strict = False)
-DS = text['DS']
+Data = text['DS']
 
 #-----------------------function define--------------------------#
 
 #得到对应元素所有的值，返回一个列表
-def get_elements(element):
+def get_elements(element, DS):
     list_1 = ['0']
     for _ in range(len(DS)):
         list_1.append(DS[_][element])
@@ -92,18 +92,18 @@ def get_elements(element):
     return list_1
 
 #打印对应元素所有的值
-def print_elements(element):
-    print(get_elements(element),element)
+def print_elements(element, DS):
+    print(get_elements(element, DS),element)
 
 #打印一个值在paras中的位置
-def print_index(element):
+def print_index(element, paras):
     print(paras.index(element))
 
 #检验一个变量的缺省数量
-def TestMissValue(element):
+def TestMissValue(element, DS):
     count = 0
     
-    list_2 = get_elements(element)
+    list_2 = get_elements(element, DS)
 
     for i in range(len(list_2)):
         if list_2[i] == '0':
@@ -117,8 +117,9 @@ def TestMissValue(element):
     
     return count
 
-def print_TestMissValue(element):
-    print(TestMissValue(element),'/', len(DS), element)
+#打印测试后的缺省值占总数的比例
+def print_TestMissValue(element, DS):
+    print(TestMissValue(element, DS),'/', len(DS), element)
 
 #检验key是否存在于字典中，并打印
 def TestKey(element, DS):
@@ -128,38 +129,77 @@ def TestKey(element, DS):
 		print('NaN')
 
 #计算变量总体的不合格数
-def TestMissValue_all():
+def TestMissValue_all(DS, paras):
     count_all = 0
-    for j in range(102, 197):
-        print_TestMissValue(paras[j])
-        if TestMissValue(paras[j]) > 5:
+    for j in range(74, 141):
+        print_TestMissValue(paras[j], DS)
+        if TestMissValue(paras[j], DS) > 5:
             count_all = count_all + 1
+        else:
+        	count_all = count_all
         print('\n')
     print(count_all)
 
 #删除字典中的某个element,返回一个新的结构体
 def DelElement(element, DS):
 	DS_1 = DS
-	for _ in range (len(DS_1)):
-		del DS_1[_][element]
+	for i in range (len(DS_1)):
+		del DS_1[i][element]
 	return DS_1
 
 #记录不合格变量，返回一个列表
-def GetTheFailedElement():
+def GetTheFailedElement(DS, paras):
 	list_3 = ['0']
 	for j in range(102,197):
-		if TestMissValue(paras[j]) > 10:
+		if TestMissValue(paras[j], DS) > 10:
 			list_3.append(paras[j])
 	del list_3[0]
 	return list_3
 
+
+
+
 #TestMissValue_all()
 
-#print_elements('PRE')
-print(len(DS))
+#先删除不合格要素的质控因子
+TheQ_FailedElement = GetTheFailedElement(Data, paras)
 
-#TheFailedElement = GetTheFailedElement()
-#print(TheFailedElement)
+for j in range(len(TheQ_FailedElement)):
+	paras.remove(TheQ_FailedElement[j])
+
+print(len(paras))
+
+for i in range(len(TheQ_FailedElement)):
+	NewElements1 = DelElement(TheQ_FailedElement[i], Data)
+
+#再删除不合格要素
+A = TheQ_FailedElement
+
+for _ in range (len(A)):
+	A[_] = str(A[_]).replace("Q_","")
+
+TheFailedElement = A
+
+for k in range(len(TheFailedElement)):	
+	paras.remove(TheFailedElement[k])
+
+print(len(paras))
+
+for ii in range(len(TheFailedElement)):
+	NewElements2 = DelElement(TheFailedElement[ii], NewElements1)
+
+#print(NewElements2)
+#测试新生产的合格数据
+TestMissValue_all(NewElements2, paras)
+
+#保存新生成的合格数据
+with open('heifei2017'+'.json','a') as outfile:  
+    json.dump(NewElements2,outfile,ensure_ascii=False)  
+    outfile.write('\n')
+
+#print(len(NewElements))
+#print(len(Newparas))
+#TestMissValue_all(NewElements, Newparas)
 
 
 
@@ -195,4 +235,3 @@ print(len(DS))
 #print(requestParams)
 #print(fieldNames)
 #print(fieldUnits)
-
