@@ -68,7 +68,7 @@ paras = ['Station_Name','Datetime','Station_Id_d','Year','Mon','Day','Hour','PRS
 ,'Q_FRS_1st_Top','Q_FRS_1st_Bot','Q_FRS_2nd_Top','Q_FRS_2nd_Bot']
 
 #打开读取文件
-with open(r'/Users/lukangjin/Desktop/hefei20170401-20170901.txt', 'rt',\
+with open(r'/Users/lukangjin/Desktop/hefei20160401-20160901.txt', 'rt',\
  encoding = 'utf-8') as fp:
 	data = fp.read()
 fp.close()
@@ -85,10 +85,9 @@ Data = text['DS']
 
 #得到对应元素所有的值，返回一个列表
 def get_elements(element, DS):
-    list_1 = ['0']
+    list_1 = []
     for _ in range(len(DS)):
         list_1.append(DS[_][element])
-    del list_1[0]
     return list_1
 
 #打印对应元素所有的值
@@ -131,7 +130,7 @@ def TestKey(element, DS):
 #计算变量总体的不合格数
 def TestMissValue_all(DS, paras):
     count_all = 0
-    for j in range(74, 141):
+    for j in range(paras.index('Q_PRS'), len(paras)):
         print_TestMissValue(paras[j], DS)
         if TestMissValue(paras[j], DS) > 5:
             count_all = count_all + 1
@@ -149,11 +148,10 @@ def DelElement(element, DS):
 
 #记录不合格变量，返回一个列表
 def GetTheFailedElement(DS, paras):
-	list_3 = ['0']
-	for j in range(102,197):
+	list_3 = []
+	for j in range(paras.index('Q_PRS'),len(paras)):
 		if TestMissValue(paras[j], DS) > 10:
 			list_3.append(paras[j])
-	del list_3[0]
 	return list_3
 
 
@@ -190,10 +188,10 @@ for ii in range(len(TheFailedElement)):
 
 #print(NewElements2)
 #测试新生产的合格数据
-TestMissValue_all(NewElements2, paras)
+#TestMissValue_all(NewElements2, paras)
 
 #保存新生成的合格数据
-with open('heifei2017'+'.json','a') as outfile:  
+with open('heifei2016'+'.json','a') as outfile:  
     json.dump(NewElements2,outfile,ensure_ascii=False)  
     outfile.write('\n')
 
