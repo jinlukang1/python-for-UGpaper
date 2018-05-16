@@ -3,7 +3,7 @@ import os
 import json
 
 #打开读取文件
-with open(r'/Users/lukangjin/Desktop/heifei2016.json', 'rt',\
+with open(r'/Users/lukangjin/Desktop/heifei2018.json', 'rt',\
  encoding = 'utf-8') as fp:
 	text = fp.read()
 fp.close()
@@ -110,7 +110,7 @@ for i in range(paras.index('Q_PRS'), len(paras)):
 
 ReadyData = data
 
-with open('heifei2016ready'+'.json','a') as outfile:  
+with open('heifei2018ready'+'.json','a') as outfile:  
     json.dump(ReadyData,outfile,ensure_ascii=False)  
     outfile.write('\n')
 #for i in range(paras.index('Q_PRS'), len(paras)):

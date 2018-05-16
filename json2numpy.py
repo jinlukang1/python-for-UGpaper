@@ -50,6 +50,18 @@ def json2numpy(B, data, Num):
 			Num[j][i] = float(data[j][B[i]])
 	return Num
 
+#生成可以直接使用的训练和测试数据
+def GenTrainAndTest(B, nparr):
+	Test = nparr[:, B.index('PRE_1h')]
+	Train = np.delete(nparr, B.index('PRE_1h'), axis = 1)
+	return Train, Test
+
+#生成文件
+def GennpyFile(num, A):
+	f = open("/Users/lukangjin/Desktop/" + A, "wb")
+	np.save(f, num)
+	f.close()
+
 #主函数
 def main():
 	ReadyElements_2016 = GetReadyElements(data_2016)
@@ -62,17 +74,32 @@ def main():
 	print(len(A))
 	B = diff(ReadyElements_2018, A)
 	print(len(B))
-	#print(B)
+#	print(B)
 	NumA_2016 = np.zeros((len(data_2016), len(B)))
 	NumA_2017 = np.zeros((len(data_2017), len(B)))
 	NumA_2018 = np.zeros((len(data_2018), len(B)))
 	NumA_2016 = json2numpy(B, data_2016, NumA_2016)
 	NumA_2017 = json2numpy(B, data_2017, NumA_2017)
 	NumA_2018 = json2numpy(B, data_2018, NumA_2018)
-	print(NumA_2016)
-#	print(NumA_1)
+	print(NumA_2016.shape)
+#	print(B.index('PRE_1h'))
 #print(ReadyElements_2016)
+#	print(NumA_2016[:,21])
+	Train_2016, Test_2016 = GenTrainAndTest(B, NumA_2016)
+	Train_2017, Test_2017 = GenTrainAndTest(B, NumA_2017)
+	Train_2018, Test_2018 = GenTrainAndTest(B, NumA_2018)
+	print(Test_2018.shape, Train_2018.shape)
 
+	GennpyFile(Train_2016, "Train_2016.npy")
+	GennpyFile(Train_2017, "Train_2017.npy")
+	GennpyFile(Train_2018, "Train_2018.npy")
+	GennpyFile(Test_2016, "Test_2016.npy")
+	GennpyFile(Test_2017, "Test_2017.npy")
+	GennpyFile(Test_2018, "Test_2018.npy")
+
+	f = open("/Users/lukangjin/Desktop/"+"Test_2018.npy", "rb")
+	A = np.load(f)
+	print(A)
 
 if __name__ == '__main__':
 	main()
